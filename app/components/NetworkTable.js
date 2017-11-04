@@ -20,15 +20,16 @@ class NetworkTable extends Component {
   render(){
     const {terminals, routes} = this.props;
 
-    const terminalList = terminals.map((terminal) => {
-      return (<TerminalContainer
-                key={`${terminal.name}`}
-                terminalInformation={terminal}
-              />);
-    });
+    const terminalList = terminals.map((terminal) => (
+              <TerminalContainer
+                key={terminal.get('name')}
+                terminalInformation={terminal.toJS()} //Props fail with a ImmutableJS object
+              />
+            )
+          );
 
     const routesTable = routes.map((route) => {
-      return (<p><span>{route[0]}  {route[1]}</span></p>);
+      return (<p><span>{route.get(0)}  {route.get(1)}</span></p>);
     })
 
     return (
@@ -44,14 +45,11 @@ class NetworkTable extends Component {
     );
   }
 };
-NetworkTable.propTypes = {
-  terminals: PropTypes.array
-};
 
 const mapStateToProps = (state) => {
   return {
-    terminals: state.getIn(['generalMessages', 'terminals']).toJS(),
-    routes: state.getIn(['generalMessages','routes']).toJS()
+    terminals: state.getIn(['generalMessages', 'terminals']),
+    routes: state.getIn(['generalMessages','routes'])
   }
 };
 const mapDispatchToProps = (dispatch) => (

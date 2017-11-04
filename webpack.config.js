@@ -4,7 +4,7 @@ var webpack = require('webpack');
  * Default webpack configuration for development
  */
 var config = {
-  devtool: 'eval-source-map',
+  devtool: 'inline-source-map',
   entry:  __dirname + "/app/App.js",
   output: {
     path: __dirname + "/public",

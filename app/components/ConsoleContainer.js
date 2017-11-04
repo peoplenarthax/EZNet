@@ -7,14 +7,13 @@ import {addConsole, saveConsoleState} from '../actions/consolesActions';
 class ConsoleContainer extends Component {
   constructor(props) {
     super(props);
-    //this.props.terminals.forEach((terminal) => this.props.addConsole(terminal.name));
     this.state = {currentConsole: ''};
   }
 
   getConsoleByName(name) {
-    const terminal = this.props.terminals.find((terminal) => terminal.name === name);
+    const terminal = this.props.terminals.find((terminal) => terminal.get('name') === name);
     if (terminal) {
-      return terminal.console;
+      return terminal.get('console').toJS();
     }
   }
 
@@ -27,8 +26,8 @@ class ConsoleContainer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.terminals && nextProps.terminals.length > 0 && !this.state.currentConsole) {
-        this.setState({currentConsole: nextProps.terminals[0].name});
+    if (!this.state.currentConsole && nextProps.terminals && nextProps.terminals.size > 0) {
+        this.setState({currentConsole: nextProps.terminals.getIn([0, 'name'])});
     }
   }
 
@@ -36,10 +35,11 @@ class ConsoleContainer extends Component {
     const {terminals} = this.props;
 
     const currentConsoleState = this.getConsoleByName(this.state.currentConsole);
-    const switchTerminalButtons = terminals.map((e) => {
+    const switchTerminalButtons = terminals.map((terminal) => {
+      const name = terminal.get('name');
       return (
-      <button key={e.name} onClick={() => this.handleClick(e.name)}>
-        {e.name}
+      <button key={name} onClick={() => this.handleClick(name)}>
+        {name}
       </button>);
     });
 
@@ -60,7 +60,7 @@ ConsoleContainer.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    terminals: state.getIn(['generalMessages', 'terminals']).toJS()
+    terminals: state.getIn(['generalMessages', 'terminals'])
   }
 }
 const mapDispatchToProps = (dispatch) => (

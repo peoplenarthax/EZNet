@@ -1,3 +1,10 @@
-export function* helloSaga() {
-  console.log('Hello Sagas!')
+import { select, takeEvery } from 'redux-saga/effects'
+
+export function* watchAndLog() {
+  yield takeEvery('*', function* logger(action) {
+    const state = yield select()
+
+    console.log('action', action)
+    console.log('state after', state)
+  })
 }

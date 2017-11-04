@@ -7,55 +7,51 @@ import {
   CLEAR_CURRENT_CONSOLE,
 } from './constants';
 import 'babel-polyfill';
+import { Record, List, fromJS } from 'immutable';
 
-const initialState = {
-  terminals: [],
-  routes:[['From', 'To']],
-};
-
-const findTerminal = (name, {terminals}) => terminals.findIndex(terminal => terminal.name === name)
+const InitialState = Record({
+  terminals: List([]),
+  routes: List([List(['From', 'To'])])
+})
+const initialState = new InitialState();
 
 const generalMessages = (state = initialState, action) => {
   switch (action.type) {
     case ADD_TERMINAL:
-      return Object.assign({}, state, {terminals: [...state.terminals, action.terminal]});
+      return state.set('terminals', state.terminals.push(fromJS(action.terminal)));
     case ADD_ROUTE_TO_TABLE:
-      let newRoute = [action.toTerminal, action.fromTerminal];
+      const newRoute = List([action.toTerminal, action.fromTerminal]);
 
-      return Object.assign({},  state, {routes:[...state.routes, newRoute]});
+      return state.set('routes', state.routes.push(newRoute));
     case SEND_PING:
-      let newTerminals = state.terminals;
-      const indexDestinyTerminal = state.terminals.findIndex((terminal) => terminal.ip === action.destinyIP);
+      const terminalIndex = state.terminals.findIndex(terminal => terminal.get('ip') === action.destinyIP);
 
-      if (indexDestinyTerminal !== -1) {
-        const {messages} = newTerminals[indexDestinyTerminal];
-
-        newTerminals[indexDestinyTerminal].messages = [...messages, `Ping from ${action.originIP}`];
-
-        return Object.assign({},  state, {terminals:newTerminals});
+      if (terminalIndex !== -1) {
+        let messageStack = state.terminals.getIn([terminalIndex, 'messages'])
+        messageStack = messageStack.push(`Ping from ${action.originIP}`);
+        return state.setIn(['terminals', terminalIndex, 'messages'], messageStack )
       }
 
       return state;
     case SAVE_CONSOLE_STATE: {
       const terminals = state.terminals.map((terminal) => {
-        if (terminal.name === action.name) {
-          return Object.assign({}, terminal, {console: action.state})
+        if (terminal.get('name') === action.name) {
+          return terminal.set('console', fromJS(action.state));
         }
         return terminal;
       });
 
-      return Object.assign({}, state, {terminals});
+      return state.set('terminals', terminals);
       }
     case CLEAR_CURRENT_CONSOLE:{
       const terminals = state.terminals.map((terminal) => {
-        if (terminal.name === action.name) {
-          const newConsole = Object.assign({}, terminal.console, {messages: []});
-          return Object.assign({}, terminal, {console: newConsole})
+        if (terminal.get('name') === action.name) {
+          return terminal.setIn(['console', 'messages'], List([]));
         }
         return terminal;
       });
 
-      return Object.assign({}, state, {terminals});
+      return state.set('terminals', terminals);
       }
     default:
     return state;

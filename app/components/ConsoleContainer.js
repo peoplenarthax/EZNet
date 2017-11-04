@@ -11,10 +11,6 @@ class ConsoleContainer extends Component {
     this.state = {currentConsole: ''};
   }
 
-  componentDidMount() {
-    console.log('ok');
-  }
-
   getConsoleByName(name) {
     const terminal = this.props.terminals.find((terminal) => terminal.name === name);
     if (terminal) {
@@ -64,7 +60,7 @@ ConsoleContainer.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    terminals: state.generalMessages.terminals
+    terminals: state.getIn(['generalMessages', 'terminals']).toJS()
   }
 }
 const mapDispatchToProps = (dispatch) => (

@@ -4,6 +4,11 @@ class TerminalContainer extends Component {
   constructor(){
     super();
   }
+
+  componentWillReceiveProps(nextProps) {
+    
+  }
+
   render() {
     const {name, ip, messages} = this.props.terminalInformation;
 

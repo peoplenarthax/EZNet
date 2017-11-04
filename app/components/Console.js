@@ -38,9 +38,7 @@ class Console extends Component {
        }
        this.interpreter.setCommands(nextProps.consoleState.interpreter)
      }
-     console.log('New state')
      const newState = Object.assign({}, this.state, {currentLine: ''}, nextProps.consoleState);
-     console.log('New state')
      this.setState(newState);
    }
 
@@ -99,7 +97,6 @@ class Console extends Component {
    render(){
      const {messages} = this.state;
      const history = messages.map((message, index) => {
-       console.log(message)
        return (<li key={`${index}`}>{message}</li>);
      });
 

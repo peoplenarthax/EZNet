@@ -50,8 +50,8 @@ NetworkTable.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    terminals: state.generalMessages.terminals,
-    routes: state.generalMessages.routes
+    terminals: state.getIn(['generalMessages', 'terminals']).toJS(),
+    routes: state.getIn(['generalMessages','routes']).toJS()
   }
 };
 const mapDispatchToProps = (dispatch) => (

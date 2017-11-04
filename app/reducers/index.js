@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import {  combineReducers } from 'redux-immutable';
 import generalMessages, * as fromGeneralMessages from './networkGeneralReducer';
 
 const rootReducer = combineReducers({

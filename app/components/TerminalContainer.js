@@ -1,15 +1,34 @@
 import React, { Component, PropTypes } from 'react';
+import Queue from '../models/Queue';
 
 class TerminalContainer extends Component {
   constructor(props){
     super(props);
+    this.messageQueue = new Queue({
+      signalCallback: this.processQueue.bind(this),
+    });
+  }
+
+  getNewMessages({terminalInformation}) {
+    const {messages} = terminalInformation;
+
+    return messages.slice(this.props.terminalInformation.messages.length);
+  }
+
+  processQueue() {
+    while(this.messageQueue.size()) {
+      const message = this.messageQueue.dequeue();
+
+      if (message.includes('Ping')) {
+        console.log('Yay!!')
+      }
+    }
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.terminalInformation.messages.length > this.props.terminalInformation.messages.length) {
-      if (Math.random() > 0.5) { //50% probabillity of replying
-        this.props.terminalInformation.consoleService.ping.callback({fxArguments:['192.168.1.103']})
-      }
+    const newMessages = this.getNewMessages(nextProps)
+    if (newMessages.length > 0) {
+      this.messageQueue.enqueue(newMessages);
     }
   }
 
